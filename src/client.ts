@@ -241,6 +241,60 @@ export class GatewayClient {
   }
 
   /**
+   * Lightweight check if the server supports Ollama-style /api/ps (running models)
+   */
+  public async checkPsAvailable(): Promise<boolean> {
+    try {
+      const url = `${this.config.serverUrl}/api/ps`;
+      const response = await this.fetch(url, {
+        method: 'GET',
+        headers: this.getHeaders(),
+      });
+      return response.ok;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Fetch currently running / loaded models from /api/ps (Ollama)
+   */
+  public async fetchRunningModels(): Promise<any> {
+    const url = `${this.config.serverUrl}/api/ps`;
+
+    try {
+      const response = await this.fetchWithRetry(url, {
+        method: 'GET',
+        headers: this.getHeaders(),
+      }, 'Fetch running models');
+
+      if (!response.ok) {
+        const errorText = await response.text().catch(() => '');
+        throw new GatewayError(
+          `Failed to fetch running models: ${response.status} ${response.statusText}${errorText ? ` - ${errorText}` : ''}`,
+          response.status,
+          this.isRetryableError(null, response.status)
+        );
+      }
+
+      return await response.json();
+    } catch (error) {
+      if (error instanceof GatewayError) {
+        throw error;
+      }
+      if (error instanceof Error) {
+        throw new GatewayError(
+          `Failed to connect to inference server: ${error.message}`,
+          undefined,
+          this.isRetryableError(error),
+          error
+        );
+      }
+      throw error;
+    }
+  }
+
+  /**
    * Create initial tool call tracking state
    */
   private createToolCallState(): ToolCallState {

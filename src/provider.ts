@@ -1272,5 +1272,25 @@ export class GatewayProvider implements vscode.LanguageModelChatProvider {
     this.config = this.loadConfig();
     this.client.updateConfig(this.config);
     this.outputChannel.appendLine('Configuration reloaded');
-  }
+    }
+
+    /**
+    * Check if the current server supports /api/ps
+    */
+    public async checkPsAvailable(): Promise<boolean> {
+        this.log('debug', `checkPsAvailable for ${this.config.serverUrl}`);
+        const result = await this.client.checkPsAvailable();
+        this.log('debug', `checkPsAvailable result: ${result}`);
+        return result;
+    }
+
+    /**
+    * Fetch currently running models from /api/ps
+    */
+    public async fetchRunningModels(): Promise<any> {
+        this.log('debug', `fetchRunningModels for ${this.config.serverUrl}`);
+        const result = await this.client.fetchRunningModels();
+        this.log('debug', `fetchRunningModels result: ${JSON.stringify(result)}`);
+        return result;
+    }
 }
