@@ -176,6 +176,12 @@ export function activate(context: vscode.ExtensionContext) {
         });
       }
 
+     for (const preset of presets) {
+       if (preset.supportsRunningModels === false) {
+           statusBar.setSupportsRunningModels(preset.url, false);
+       }
+     }
+
       // Add presets
       for (const preset of presets) {
         items.push({

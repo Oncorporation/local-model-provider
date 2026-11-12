@@ -87,7 +87,7 @@ export interface OllamaPsModel {
   model: string;
   size: number;
   digest: string;
-  details?: any;
+  details?: unknown;
   expires_at?: string;
   size_vram?: number;
 }
