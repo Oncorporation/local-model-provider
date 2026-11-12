@@ -139,7 +139,8 @@ export class GatewayClient {
              message.includes('econnreset') ||
              message.includes('econnrefused') ||
              message.includes('network') ||
-             message.includes('abort');
+             message.includes('abort') ||
+             message.includes('fetch failed');
     }
     return false;
   }
